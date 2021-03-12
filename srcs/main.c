@@ -6,11 +6,11 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/18 11:52:28 by jnakahod          #+#    #+#             */
-/*   Updated: 2020/11/25 16:18:44 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/12 12:59:26 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../includes/get_next_line.h"
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/uio.h>

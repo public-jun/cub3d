@@ -6,11 +6,11 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 10:52:22 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/11 21:20:44 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/12 18:26:06 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../includes/cub3d.h"
 
 static char			*make_join(size_t len_s1, size_t len_s2,
 							char const *s1, char const*s2)
@@ -84,6 +84,7 @@ int				fd_read(int *flag, int fd, char **line, char **save)
 	char		*buf;
 	ssize_t		read_size;
 
+	read_size = 0;
 	if (!(buf = malloc(sizeof(char) * ((size_t)BUFFER_SIZE + 1))))
 		*flag = -1;
 	buf[0] = '\0';

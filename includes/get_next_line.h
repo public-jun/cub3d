@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 10:52:47 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/11 21:23:17 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/12 17:49:51 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 
 int				get_next_line(int fd, char **line);
 int				fd_read(int *flag, int fd, char **line, char **save);
-void			free_set(char **dst, char *src);
+// void			free_set(char **dst, char *src);
 char			*ft_strjoin_n(char *s1, char *s2, size_t n);
 size_t			ft_strchr_ex(char *s, int c);
 int				put_line(char **line, char **save, char *buf);

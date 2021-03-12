@@ -6,17 +6,17 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 10:52:35 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/11 21:23:04 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/12 17:50:28 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../includes/cub3d.h"
 
-void			free_set(char **dst, char *src)
-{
-	free(*dst);
-	*dst = src;
-}
+// void			free_set(char **dst, char *src)
+// {
+// 	free(*dst);
+// 	*dst = src;
+// }
 
 size_t			ft_strchr_ex(char *s, int c)
 {

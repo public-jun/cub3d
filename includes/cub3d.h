@@ -1,29 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_free.c                                          :+:      :+:    :+:   */
+/*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/11 15:22:31 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/12 17:50:20 by jnakahod         ###   ########.fr       */
+/*   Created: 2021/03/12 12:49:26 by jnakahod          #+#    #+#             */
+/*   Updated: 2021/03/12 17:35:51 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef CUB3D_H
+# define CUB3D_H
 
-void			free_set(char **dst, char *src)
-{
-	free(*dst);
-	*dst = src;
-}
+# include "get_next_line.h"
+# include "../libft/libft.h"
+# include <fcntl.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <string.h>
+# include <stdio.h>
+# include <math.h>
 
-void			ft_free_all(char **src)
-{
-	int			i;
+#define MAP_HEIGHT 50
+#define MAP_WIDTH 50
 
-	i = 0;
-	while (src[i])
-		free(src[i++]);
-	free(src);
-}
+#endif
