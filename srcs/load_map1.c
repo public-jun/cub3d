@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/12 12:48:29 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/12 18:50:49 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/12 22:55:30 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,6 +209,38 @@ void			ft_parse_line_path(char **path, int *flag, char **line)
 	ft_free_all(tmp);
 }
 
+void			ft_input_rgb(t_color *color, char **char_rgb)
+{
+	if ((ft_is_all_num(char_rgb[R])) < 0)
+		ft_put_error_and_exit("Contains non-numeric characters");
+	color->r = ft_atoi_ex(char_rgb[R]);
+	if ((ft_is_all_num(char_rgb[G])) < 0)
+		ft_put_error_and_exit("Contains non-numeric characters");
+	color->g = ft_atoi_ex(char_rgb[G]);
+	if ((ft_is_all_num(char_rgb[B])) < 0)
+		ft_put_error_and_exit("Contains non-numeric characters");
+	color->b = ft_atoi_ex(char_rgb[B]);
+	if (color->r < 0 || color->g < 0 || color->b < 0 || 255 < color->r || 255 < color->g || 255 < color->b )
+		ft_put_error_and_exit("Invalid value");
+}
+
+void			ft_parse_line_color(t_color *color, int *flag, char **line)
+{
+	char		**char_rgb;
+	char 		**tmp;
+
+	tmp = NULL;
+	if (!(tmp = ft_split(*line, ' ')))
+		ft_put_error_and_exit("Invalid format");
+	if (!(char_rgb = ft_split(tmp[1], ',')))
+		ft_put_error_and_exit("Invalid format");
+	ft_free_all(tmp);
+	ft_input_rgb(color, char_rgb);
+	if (char_rgb[3])
+		ft_put_error_and_exit("Invalid format");
+	ft_free_all(char_rgb);
+	*flag = 1;
+}
 // param の条件分岐
 void			ft_parse_line_param(t_all *all, char **line)
 {
@@ -229,9 +261,10 @@ void			ft_parse_line_param(t_all *all, char **line)
 		ft_parse_line_path(&all->path_tex.east, &all->flag.ea, line);
 	else if ((*line)[i] == 'S' && (*line)[i + 1] == ' ')
 		ft_parse_line_path(&all->path_tex.sprite, &all->flag.s, line);
-	// else if ((*line)[i] == 'F' && (*line)[i + 1] == ' ')
-	// 	ft_parse_line_f(all, line, &i);
-	// else if ((*line)[i] == 'C' && (*line)[i + 1] == ' ')
+	else if ((*line)[i] == 'F' && (*line)[i + 1] == ' ')
+		ft_parse_line_color(&all->color_f, &all->flag.f, line);
+	else if ((*line)[i] == 'C' && (*line)[i + 1] == ' ')
+		ft_parse_line_color(&all->color_c, &all->flag.c, line);
 	// 	ft_parse_line_c(all, line, &i);
 
 }
@@ -258,6 +291,7 @@ void			ft_read_cub(int fd, t_all *all)
 		ft_parse_line(all, &line);
 		free(line);
 	}
+	printf("%8d : %s\n", res, line);
 	if (res == -1)
 		ft_put_error_and_exit("Failed to read\n");
 	free(line);
@@ -288,6 +322,10 @@ int				main(int ac, char **av)
 		printf("flag_ea  : %d\n", all.flag.ea);
 		printf("S       : %s\n", all.path_tex.sprite);
 		printf("flag_s  : %d\n", all.flag.s);
+		printf("F       : %d, %d, %d\n", all.color_f.r, all.color_f.g, all.color_f.b);
+		printf("C       : %d, %d, %d\n", all.color_c.r, all.color_c.g, all.color_c.b);
+		printf("flag_f  : %d\n", all.flag.f);
+		printf("flag_f  : %d\n", all.flag.c);
 	}
 	close(fd);
 	ft_exit(&all);

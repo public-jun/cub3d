@@ -5,8 +5,8 @@ WE ./textures/spring.xpm
 EA ./textures/autumn.xpm
 
 S ./textures/oldcry.xpm
-F 255,255,255
-C 200,255,255
+F 100,150,255
+C 200,21,1
 
 11111111
 10000001

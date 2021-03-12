@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/12 12:49:26 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/12 17:35:51 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/12 21:55:36 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,10 @@
 # include <stdio.h>
 # include <math.h>
 
-#define MAP_HEIGHT 50
-#define MAP_WIDTH 50
+# define MAP_HEIGHT 50
+# define MAP_WIDTH 50
+# define R 0
+# define G 1
+# define B 2
 
 #endif
