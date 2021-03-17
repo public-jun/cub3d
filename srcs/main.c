@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/18 11:52:28 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/12 12:59:26 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/17 17:15:50 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,10 @@ int main(int ac, char **av)
 {
 	(void)av;
 	char *line = NULL;
-	int i, j;
+	int i, j, k;
 
 
+	k = 0;
 	if (ac == 2)
 	{
 		int fd = open(av[1], O_RDONLY);
@@ -35,6 +36,7 @@ int main(int ac, char **av)
 			i = get_next_line(fd, &line);
 			printf("%4d : %s\n", i, line);
 			free(line);
+			k++;
 		} while (0 < i);
 		close(fd);
 	}
@@ -55,5 +57,6 @@ int main(int ac, char **av)
 		close(fd2);
 		close(fd3);
 	}
+	while (1);
 	return (0);
 }

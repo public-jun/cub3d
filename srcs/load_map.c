@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 14:47:47 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/11 23:07:16 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/17 14:28:40 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void			ft_put_error_and_exit(char *s)
 {
 	write(1, "\e[31mError\e[m\n", 15);
 	ft_putstr_fd(s, 2);
-	// ft_exit(all);
+	ft_exit(all);
 }
 
 int				ft_skip_str(char *str, char *line)
@@ -174,7 +174,7 @@ void			ft_load_tex_paths(int fd, char **line, t_all *all)
 
 	all->tex_path.path = (char **)malloc(sizeof(char *) * 5);
 	if (!all->tex_path.path)
-		ft_put_error_and_exit("cant malloc");
+		ft_put_error_and_exit("cant malloc\n");
 	i = get_next_line(fd, line);
 	all->tex_path.path[0] = ft_input_path("NO ", *line);
 	if (!all->tex_path.path[0])

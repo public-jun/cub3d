@@ -6,75 +6,75 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/12 12:48:29 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/16 22:41:05 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/17 18:00:29 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
 
-typedef struct		s_win_r
-{
-	int				x;
-	int				y;
-}					t_win_r;
+// typedef struct		s_win_r
+// {
+// 	int				x;
+// 	int				y;
+// }					t_win_r;
 
-typedef struct		s_path_tex
-{
-	char			*north;
-	char			*south;
-	char			*west;
-	char			*east;
-	char			*sprite;
-}					t_path_tex;
+// typedef struct		s_path_tex
+// {
+// 	char			*north;
+// 	char			*south;
+// 	char			*west;
+// 	char			*east;
+// 	char			*sprite;
+// }					t_path_tex;
 
-typedef struct		s_color
-{
-	int				r;
-	int				g;
-	int				b;
-	int				rgb;
-}					t_color;
+// typedef struct		s_color
+// {
+// 	int				r;
+// 	int				g;
+// 	int				b;
+// 	int				rgb;
+// }					t_color;
 
-typedef struct		s_map
-{
-	char			char_map[MAP_HEIGHT][MAP_WIDTH];
-	int				map[MAP_HEIGHT][MAP_WIDTH];
-	int				start;
-	int				end;
-	int				tmp_y;
-	int				pflag;
-}					t_map;
+// typedef struct		s_map
+// {
+// 	char			char_map[MAP_HEIGHT][MAP_WIDTH];
+// 	int				map[MAP_HEIGHT][MAP_WIDTH];
+// 	int				start;
+// 	int				end;
+// 	int				tmp_y;
+// 	int				pflag;
+// }					t_map;
 
-typedef struct		s_flag
-{
-	int				eflag;
-	int				r;
-	int				no;
-	int				so;
-	int				we;
-	int				ea;
-	int				s;
-	int				f;
-	int				c;
-	int				except_map;
-}					t_flag;
+// typedef struct		s_flag
+// {
+// 	int				eflag;
+// 	int				r;
+// 	int				no;
+// 	int				so;
+// 	int				we;
+// 	int				ea;
+// 	int				s;
+// 	int				f;
+// 	int				c;
+// 	int				except_map;
+// }					t_flag;
 
-typedef struct		s_all
-{
-	// t_info		info;
-	// t_img		img;
-	// t_player	player;
-	// t_info		info;
-	// t_key		key;
-	// t_pair		pair;
-	// t_sprite	sprite;
-	t_win_r		win_r;
-	t_path_tex		path_tex;
-	t_color			color_f;
-	t_color			color_c;
-	t_map			map;
-	t_flag			flag;
-}					t_all;
+// typedef struct		s_all
+// {
+// 	// t_info		info;
+// 	// t_img		img;
+// 	// t_player	player;
+// 	// t_info		info;
+// 	// t_key		key;
+// 	// t_pair		pair;
+// 	// t_sprite	sprite;
+// 	t_win_r		win_r;
+// 	t_path_tex		path_tex;
+// 	t_color			color_f;
+// 	t_color			color_c;
+// 	t_map			map;
+// 	t_flag			flag;
+// }					t_all;
 
 
 void			ft_free_path(t_all *all)
@@ -91,18 +91,19 @@ void			ft_free_path(t_all *all)
 		free(all->path_tex.sprite);
 }
 
-void			ft_exit(t_all *all)
+void			ft_exit(t_all *all, char **line)
 {
 	ft_free_path(all);
+	free(*line);
 	exit(0);
 }
 
 //error
-void			ft_put_error_and_exit(char *s)
+void			ft_put_error_and_exit(t_all *all, char **line, char *s)
 {
 	write(1, "\e[31mError\e[m\n", 15);
 	ft_putstr_fd(s, 2);
-	// ft_exit(all);
+	ft_exit(all, line);
 }
 
 //.cub 判定
@@ -207,24 +208,24 @@ void			ft_parse_line_r(t_all *all, char **line)
 	char		**tmp;
 
 	if (all->flag.r == 1)
-		ft_put_error_and_exit("Set only one R\n");
+		ft_put_error_and_exit(all, line, "Set only one R\n");
 	if (!(tmp = ft_split(*line, ' ')))
-		ft_put_error_and_exit("Invalid R format");
+		ft_put_error_and_exit(all, line, "Invalid R format\n");
 	if ((ft_is_all_num(tmp[1])) < 0)
-		ft_put_error_and_exit("Contains non-numeric characters");
+		ft_put_error_and_exit(all, line, "Contains non-numeric characters\n");
 	all->win_r.x = ft_atoi_ex(tmp[1]);
 	if ((ft_is_all_num(tmp[2])) < 0)
-		ft_put_error_and_exit("Contains non-numeric characters");
+		ft_put_error_and_exit(all, line, "Contains non-numeric characters\n");
 	all->win_r.y = ft_atoi_ex(tmp[2]);
 	if (all->win_r.x < 1 || 1920 < all->win_r.x || all->win_r.y < 1 || 1080 < all->win_r.y)
-		ft_put_error_and_exit("Invalid value");
+		ft_put_error_and_exit(all, line, "Invalid value\n");
 	if (tmp[3])
-		ft_put_error_and_exit("Invalid format");
+		ft_put_error_and_exit(all, line, "Invalid format\n");
 	all->flag.r = 1;
 	ft_free_all(tmp);
 }
 
-void			ft_parse_line_path(char **path, int *flag, char **line)
+void			ft_parse_line_path(t_all *all, char **path, int *flag, char **line)
 {
 	char		*res;
 	char		**tmp;
@@ -232,52 +233,52 @@ void			ft_parse_line_path(char **path, int *flag, char **line)
 
 	tmp = NULL;
 	if (*flag == 1)
-		ft_put_error_and_exit("Set only one each path\n");
+		ft_put_error_and_exit(all, line, "Set only one each path\n");
 	if (!(tmp = ft_split(*line, ' ')))
-		ft_put_error_and_exit("Invalid format");
+		ft_put_error_and_exit(all, line, "Invalid format");
 	if (!(res = ft_strdup(tmp[1])))
-		ft_put_error_and_exit("Invalid format");
+		ft_put_error_and_exit(all, line, "Invalid format");
 	if (res[0] != '.' || res[1] != '/')
-		ft_put_error_and_exit("Invalid path");
+		ft_put_error_and_exit(all, line, "Invalid path");
 	*path = res;
 	*flag = 1;
 	ft_free_all(tmp);
 }
 
-void			ft_input_rgb(t_color *color, char **char_rgb)
+void			ft_input_rgb(t_all *all, char **line, t_color *color, char **char_rgb)
 {
 	if ((ft_is_all_num(char_rgb[R])) < 0)
-		ft_put_error_and_exit("Contains non-numeric characters");
+		ft_put_error_and_exit(all, line, "Contains non-numeric characters");
 	color->r = ft_atoi_ex(char_rgb[R]);
 	if ((ft_is_all_num(char_rgb[G])) < 0)
-		ft_put_error_and_exit("Contains non-numeric characters");
+		ft_put_error_and_exit(all, line, "Contains non-numeric characters");
 	color->g = ft_atoi_ex(char_rgb[G]);
 	if ((ft_is_all_num(char_rgb[B])) < 0)
-		ft_put_error_and_exit("Contains non-numeric characters");
+		ft_put_error_and_exit(all, line, "Contains non-numeric characters");
 	color->b = ft_atoi_ex(char_rgb[B]);
 	if (color->r < 0 || color->g < 0 || color->b < 0 || 255 < color->r || 255 < color->g || 255 < color->b )
-		ft_put_error_and_exit("Invalid value");
+		ft_put_error_and_exit(all, line, "Invalid value");
 }
 
-void			ft_parse_line_color(t_color *color, int *flag, char **line)
+void			ft_parse_line_color(t_all *all, t_color *color, int *flag, char **line)
 {
 	char		**char_rgb;
 	char 		**tmp;
 
 	if (*flag == 1)
-		ft_put_error_and_exit("Set only one each color\n");
+		ft_put_error_and_exit(all, line, "Set only one each color\n");
 	tmp = NULL;
 	if (!(tmp = ft_split(*line, ' ')))
-		ft_put_error_and_exit("Invalid format");
+		ft_put_error_and_exit(all, line, "Invalid format");
 	if (!(char_rgb = ft_split(tmp[1], ',')))
 	{
 		ft_free_all(tmp);
-		ft_put_error_and_exit("Invalid format");
+		ft_put_error_and_exit(all, line, "Invalid format");
 	}
 	ft_free_all(tmp);
-	ft_input_rgb(color, char_rgb);
+	ft_input_rgb(all, line, color, char_rgb);
 	if (char_rgb[3])
-		ft_put_error_and_exit("Invalid format");
+		ft_put_error_and_exit(all, line, "Invalid format");
 	ft_free_all(char_rgb);
 	*flag = 1;
 }
@@ -292,19 +293,19 @@ void			ft_parse_line_param(t_all *all, char **line)
 	if ((*line)[i] == 'R' && (*line)[i + 1] == ' ')
 		ft_parse_line_r(all, line);
 	else if ((*line)[i] == 'N' && (*line)[i + 1] == 'O' && (*line)[i + 2] == ' ')
-		ft_parse_line_path(&all->path_tex.north, &all->flag.no, line);
+		ft_parse_line_path(all, &all->path_tex.north, &all->flag.no, line);
 	else if ((*line)[i] == 'S' && (*line)[i + 1] == 'O' && (*line)[i + 2] == ' ')
-		ft_parse_line_path(&all->path_tex.south, &all->flag.so, line);
+		ft_parse_line_path(all, &all->path_tex.south, &all->flag.so, line);
 	else if ((*line)[i] == 'W' && (*line)[i + 1] == 'E' && (*line)[i + 2] == ' ')
-		ft_parse_line_path(&all->path_tex.west, &all->flag.we, line);
+		ft_parse_line_path(all, &all->path_tex.west, &all->flag.we, line);
 	else if ((*line)[i] == 'E' && (*line)[i + 1] == 'A' && (*line)[i + 2] == ' ')
-		ft_parse_line_path(&all->path_tex.east, &all->flag.ea, line);
+		ft_parse_line_path(all, &all->path_tex.east, &all->flag.ea, line);
 	else if ((*line)[i] == 'S' && (*line)[i + 1] == ' ')
-		ft_parse_line_path(&all->path_tex.sprite, &all->flag.s, line);
+		ft_parse_line_path(all, &all->path_tex.sprite, &all->flag.s, line);
 	else if ((*line)[i] == 'F' && (*line)[i + 1] == ' ')
-		ft_parse_line_color(&all->color_f, &all->flag.f, line);
+		ft_parse_line_color(all, &all->color_f, &all->flag.f, line);
 	else if ((*line)[i] == 'C' && (*line)[i + 1] == ' ')
-		ft_parse_line_color(&all->color_c, &all->flag.c, line);
+		ft_parse_line_color(all, &all->color_c, &all->flag.c, line);
 	// 	ft_parse_line_c(all, line, &i);
 
 }
@@ -344,9 +345,9 @@ void			ft_judge_possible_chars(t_all *all, char **line)
 	while ((*line)[i])
 	{
 		if (((*line)[i] == 'N' || (*line)[i] == 'S' || (*line)[i] == 'W' || (*line)[i] == 'E') && all->map.pflag == 1)
-			ft_put_error_and_exit("Set only one player coordinates\n");
-		if ((*line)[i] == ' ' || (*line)[i] == '0' || (*line)[i] ==  '1' || (*line)[i] == '2' || (*line)[i] == 'N' || (*line)[i] == 'S' || (*line)[i] == 'W' || (*line)[i] == 'E'))
-			ft_put_error_and_exit("The map is be composed of inpossible characters");
+			ft_put_error_and_exit(all, line, "Set only one player coordinates\n");
+		if (!((*line)[i] == ' ' || (*line)[i] == '0' || (*line)[i] ==  '1' || (*line)[i] == '2' || (*line)[i] == 'N' || (*line)[i] == 'S' || (*line)[i] == 'W' || (*line)[i] == 'E'))
+			ft_put_error_and_exit(all, line, "The map is be composed of inpossible characters\n");
 		if ((*line)[i] == 'N' || (*line)[i] == 'S' || (*line)[i] == 'W' || (*line)[i] == 'E')
 			all->map.pflag = 1;
 		i++;
@@ -366,11 +367,6 @@ int				ft_in_the_process_of_forming_map(t_all *all, char **line)
 		all->map.start = 1;
 		return (1);
 	}
-	// if ((*line)[0] == '\0' && all->map.start == 1)
-	// {
-	// 	all->map.end = 1;
-	// 	return (-1);
-	// }
 	return (0);
 }
 
@@ -381,7 +377,7 @@ void			ft_parse_line_map(t_all *all, char **line)
 	{
 		ft_judge_possible_chars(all, line);
 		if ((MAP_WIDTH - 2 < (int)ft_strlen(*line)) || (MAP_HEIGHT - 2 < all->map.tmp_y))
-			ft_put_error_and_exit("Map size limits is exceeded\n");
+			ft_put_error_and_exit(all, line, "Map size limits is exceeded\n");
 		ft_store_line_with_map(all, line);
 	}
 }
@@ -411,10 +407,10 @@ void			ft_read_cub(int fd, t_all *all)
 		free(line);
 	}
 	if (res == 0 && all->flag.except_map == 0)
-		ft_put_error_and_exit("This cub file is insufficient");
+		ft_put_error_and_exit(all, &line, "This cub file is insufficient");
 	// printf("%8d : %s\n", res, line);
 	if (res == -1)
-		ft_put_error_and_exit("Failed to read\n");
+		ft_put_error_and_exit(all, &line, "Failed to read\n");
 	free(line);
 }
 
@@ -429,7 +425,7 @@ int				main(int ac, char **av)
 	{
 		ft_init(&all);
 		if ((fd = open(av[1], O_RDONLY)) <  0)
-			ft_put_error_and_exit("Failed to open\n");
+			ft_put_error_and_exit(&all, NULL, "Failed to open\n");
 		ft_read_cub(fd, &all);
 		printf("win_r.x  : %d\n", all.win_r.x);
 		printf("win_r.y  : %d\n", all.win_r.y);
@@ -457,5 +453,5 @@ int				main(int ac, char **av)
 		}
 	}
 	close(fd);
-	ft_exit(&all);
+	ft_free_path(&all);
 }
