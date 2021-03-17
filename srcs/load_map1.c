@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/12 12:48:29 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/12 22:55:30 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/16 22:41:05 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,10 @@ typedef struct		s_map
 {
 	char			char_map[MAP_HEIGHT][MAP_WIDTH];
 	int				map[MAP_HEIGHT][MAP_WIDTH];
+	int				start;
+	int				end;
+	int				tmp_y;
+	int				pflag;
 }					t_map;
 
 typedef struct		s_flag
@@ -52,6 +56,7 @@ typedef struct		s_flag
 	int				s;
 	int				f;
 	int				c;
+	int				except_map;
 }					t_flag;
 
 typedef struct		s_all
@@ -123,6 +128,7 @@ void			ft_init_all(t_all *all)
 	all->flag.s = 0;
 	all->flag.f = 0;
 	all->flag.c = 0;
+	all->flag.except_map = 0;
 	all->win_r.x = 0;
 	all->win_r.y = 0;
 	all->path_tex.north = NULL;
@@ -130,17 +136,44 @@ void			ft_init_all(t_all *all)
 	all->path_tex.west = NULL;
 	all->path_tex.east = NULL;
 	all->path_tex.sprite = NULL;
+	all->map.pflag = 0;
+	all->map.start = 0;
+	all->map.end = 0;
+	all->map.tmp_y = 1;
 }
 
-// init map
-// void			ft_init_map(t_all *all)
-// {
+void			ft_init_char_map(t_all *all)
+{
+	int			x;
+	int			y;
 
-// }
+	y = 0;
+	while (y < MAP_HEIGHT)
+	{
+		x = 0;
+		while (x < MAP_WIDTH)
+		{
+			if (x == 0 || x == MAP_WIDTH - 1 || y == 0 || y == MAP_HEIGHT - 1)
+				all->map.char_map[y][x] = 'x';
+			else
+				all->map.char_map[y][x] = '0';
+			x++;
+		}
+		y++;
+	}
+}
 
 void			ft_init(t_all *all)
 {
 	ft_init_all(all);
+	ft_init_char_map(all);
+	// printf("init map\n\n");
+	// for(int i = 0; i < MAP_HEIGHT; i++)
+	// {
+	// 	for(int j = 0; j < MAP_WIDTH; j++)
+	// 		printf("%c", all->map.char_map[i][j]);
+	// 	printf("\n");
+	// }
 }
 
 int				ft_skip_null_and_space(char **line, int *i)
@@ -173,17 +206,17 @@ void			ft_parse_line_r(t_all *all, char **line)
 {
 	char		**tmp;
 
+	if (all->flag.r == 1)
+		ft_put_error_and_exit("Set only one R\n");
 	if (!(tmp = ft_split(*line, ' ')))
 		ft_put_error_and_exit("Invalid R format");
 	if ((ft_is_all_num(tmp[1])) < 0)
 		ft_put_error_and_exit("Contains non-numeric characters");
 	all->win_r.x = ft_atoi_ex(tmp[1]);
-	if (all->win_r.x < 1 || 1920 < all->win_r.x)
-		ft_put_error_and_exit("Invalid value");
 	if ((ft_is_all_num(tmp[2])) < 0)
 		ft_put_error_and_exit("Contains non-numeric characters");
 	all->win_r.y = ft_atoi_ex(tmp[2]);
-	if (all->win_r.y < 1 || 1080 < all->win_r.y)
+	if (all->win_r.x < 1 || 1920 < all->win_r.x || all->win_r.y < 1 || 1080 < all->win_r.y)
 		ft_put_error_and_exit("Invalid value");
 	if (tmp[3])
 		ft_put_error_and_exit("Invalid format");
@@ -198,6 +231,8 @@ void			ft_parse_line_path(char **path, int *flag, char **line)
 
 
 	tmp = NULL;
+	if (*flag == 1)
+		ft_put_error_and_exit("Set only one each path\n");
 	if (!(tmp = ft_split(*line, ' ')))
 		ft_put_error_and_exit("Invalid format");
 	if (!(res = ft_strdup(tmp[1])))
@@ -229,11 +264,16 @@ void			ft_parse_line_color(t_color *color, int *flag, char **line)
 	char		**char_rgb;
 	char 		**tmp;
 
+	if (*flag == 1)
+		ft_put_error_and_exit("Set only one each color\n");
 	tmp = NULL;
 	if (!(tmp = ft_split(*line, ' ')))
 		ft_put_error_and_exit("Invalid format");
 	if (!(char_rgb = ft_split(tmp[1], ',')))
+	{
+		ft_free_all(tmp);
 		ft_put_error_and_exit("Invalid format");
+	}
 	ft_free_all(tmp);
 	ft_input_rgb(color, char_rgb);
 	if (char_rgb[3])
@@ -269,12 +309,91 @@ void			ft_parse_line_param(t_all *all, char **line)
 
 }
 
+//map以外のflagが全て立っている
+int				ft_flag_on_expect_map(t_all *all)
+{
+	if (all->flag.r == 1 && all->flag.no == 1 && all->flag.so == 1 && all->flag.we == 1 && all->flag.ea == 1 && all->flag.s == 1 && all->flag.f == 1 && all->flag.c == 1)
+		return (1);
+	else
+		return (0);
+}
+
+//lineを1行char
+void			ft_store_line_with_map(t_all *all, char **line)
+{
+	int			x;
+
+	x = 0;
+	while ((x + 1 < MAP_WIDTH - 1) && ((*line)[x] != '\0'))
+	{
+		all->map.char_map[all->map.tmp_y][x + 1] = (*line)[x];
+		x++;
+	}
+	// for (int i = 0; i < MAP_WIDTH; i++)
+	// 	printf("%c", all->map.char_map[all->map.tmp_y][i]);
+	// printf("\n");
+	all->map.tmp_y++;
+}
+
+//lineがspace,0,1,2,N,S,W,Eで構成されているか
+void			ft_judge_possible_chars(t_all *all, char **line)
+{
+	int			i;
+
+	i = 0;
+	while ((*line)[i])
+	{
+		if (((*line)[i] == 'N' || (*line)[i] == 'S' || (*line)[i] == 'W' || (*line)[i] == 'E') && all->map.pflag == 1)
+			ft_put_error_and_exit("Set only one player coordinates\n");
+		if ((*line)[i] == ' ' || (*line)[i] == '0' || (*line)[i] ==  '1' || (*line)[i] == '2' || (*line)[i] == 'N' || (*line)[i] == 'S' || (*line)[i] == 'W' || (*line)[i] == 'E'))
+			ft_put_error_and_exit("The map is be composed of inpossible characters");
+		if ((*line)[i] == 'N' || (*line)[i] == 'S' || (*line)[i] == 'W' || (*line)[i] == 'E')
+			all->map.pflag = 1;
+		i++;
+	}
+}
+
+//mapの終わりを判断する
+
+//mapの始まりと終わりを確認
+int				ft_in_the_process_of_forming_map(t_all *all, char **line)
+{
+
+	if ((*line)[0] == '\0' && all->map.start == 0)
+		return (-1);
+	if (all->map.start == 0)
+	{
+		all->map.start = 1;
+		return (1);
+	}
+	// if ((*line)[0] == '\0' && all->map.start == 1)
+	// {
+	// 	all->map.end = 1;
+	// 	return (-1);
+	// }
+	return (0);
+}
+
+//line を charmap に格納
+void			ft_parse_line_map(t_all *all, char **line)
+{
+	if (ft_in_the_process_of_forming_map(all, line) >= 0)
+	{
+		ft_judge_possible_chars(all, line);
+		if ((MAP_WIDTH - 2 < (int)ft_strlen(*line)) || (MAP_HEIGHT - 2 < all->map.tmp_y))
+			ft_put_error_and_exit("Map size limits is exceeded\n");
+		ft_store_line_with_map(all, line);
+	}
+}
 
 //map かそれ以外で判定
 void			ft_parse_line(t_all *all, char **line)
 {
-	ft_parse_line_param(all, line);
-	//map判定
+		ft_parse_line_param(all, line);
+	if (all->flag.except_map == 1)
+		ft_parse_line_map(all, line);
+	if (all->flag.except_map == 0)
+		all->flag.except_map = ft_flag_on_expect_map(all);
 }
 
 //cub 読み込み部分(gnl)
@@ -287,11 +406,13 @@ void			ft_read_cub(int fd, t_all *all)
 	res = 0;
 	while((res = get_next_line(fd, &line)) > 0)
 	{
-		printf("%8d : %s\n", res, line);
+		// printf("%8d : %s\n", res, line);
 		ft_parse_line(all, &line);
 		free(line);
 	}
-	printf("%8d : %s\n", res, line);
+	if (res == 0 && all->flag.except_map == 0)
+		ft_put_error_and_exit("This cub file is insufficient");
+	// printf("%8d : %s\n", res, line);
 	if (res == -1)
 		ft_put_error_and_exit("Failed to read\n");
 	free(line);
@@ -325,7 +446,15 @@ int				main(int ac, char **av)
 		printf("F       : %d, %d, %d\n", all.color_f.r, all.color_f.g, all.color_f.b);
 		printf("C       : %d, %d, %d\n", all.color_c.r, all.color_c.g, all.color_c.b);
 		printf("flag_f  : %d\n", all.flag.f);
-		printf("flag_f  : %d\n", all.flag.c);
+		printf("flag_c  : %d\n", all.flag.c);
+
+		printf("\nset map\n\n");
+		for(int i = 0; i < MAP_HEIGHT; i++)
+		{
+			for(int j = 0; j < MAP_WIDTH; j++)
+				printf("%c", all.map.char_map[i][j]);
+			printf("\n");
+		}
 	}
 	close(fd);
 	ft_exit(&all);
