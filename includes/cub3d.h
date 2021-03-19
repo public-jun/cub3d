@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/12 12:49:26 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/17 18:00:17 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/17 21:47:39 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ typedef struct		s_map
 	int				end;
 	int				tmp_y;
 	int				pflag;
+	int				p_x;
+	int				p_y;
 }					t_map;
 
 typedef struct		s_flag
@@ -74,6 +76,25 @@ typedef struct		s_flag
 	int				c;
 	int				except_map;
 }					t_flag;
+
+
+// typedef struct	s_info
+// {
+// 	double	posX;
+// 	double	posY;
+// 	double	dirX;
+// 	double	dirY;
+// 	double	planeX;
+// 	double	planeY;
+// 	void	*mlx;
+// 	void	*win;
+// 	t_img	img;
+// 	int		**buf;
+// 	double	zBuffer[width];
+// 	int		**texture;
+// 	double	moveSpeed;
+// 	double	rotSpeed;
+// }				t_info;
 
 typedef struct		s_all
 {
@@ -91,5 +112,6 @@ typedef struct		s_all
 	t_map			map;
 	t_flag			flag;
 }					t_all;
+
 
 #endif

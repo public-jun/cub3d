@@ -6,76 +6,11 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/12 12:48:29 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/17 18:00:29 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/19 13:05:20 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
-
-// typedef struct		s_win_r
-// {
-// 	int				x;
-// 	int				y;
-// }					t_win_r;
-
-// typedef struct		s_path_tex
-// {
-// 	char			*north;
-// 	char			*south;
-// 	char			*west;
-// 	char			*east;
-// 	char			*sprite;
-// }					t_path_tex;
-
-// typedef struct		s_color
-// {
-// 	int				r;
-// 	int				g;
-// 	int				b;
-// 	int				rgb;
-// }					t_color;
-
-// typedef struct		s_map
-// {
-// 	char			char_map[MAP_HEIGHT][MAP_WIDTH];
-// 	int				map[MAP_HEIGHT][MAP_WIDTH];
-// 	int				start;
-// 	int				end;
-// 	int				tmp_y;
-// 	int				pflag;
-// }					t_map;
-
-// typedef struct		s_flag
-// {
-// 	int				eflag;
-// 	int				r;
-// 	int				no;
-// 	int				so;
-// 	int				we;
-// 	int				ea;
-// 	int				s;
-// 	int				f;
-// 	int				c;
-// 	int				except_map;
-// }					t_flag;
-
-// typedef struct		s_all
-// {
-// 	// t_info		info;
-// 	// t_img		img;
-// 	// t_player	player;
-// 	// t_info		info;
-// 	// t_key		key;
-// 	// t_pair		pair;
-// 	// t_sprite	sprite;
-// 	t_win_r		win_r;
-// 	t_path_tex		path_tex;
-// 	t_color			color_f;
-// 	t_color			color_c;
-// 	t_map			map;
-// 	t_flag			flag;
-// }					t_all;
-
 
 void			ft_free_path(t_all *all)
 {
@@ -94,7 +29,8 @@ void			ft_free_path(t_all *all)
 void			ft_exit(t_all *all, char **line)
 {
 	ft_free_path(all);
-	free(*line);
+	if (line != NULL)
+		free(*line);
 	exit(0);
 }
 
@@ -141,6 +77,8 @@ void			ft_init_all(t_all *all)
 	all->map.start = 0;
 	all->map.end = 0;
 	all->map.tmp_y = 1;
+	all->map.p_x = 0;
+	all->map.p_y = 0;
 }
 
 void			ft_init_char_map(t_all *all)
@@ -319,6 +257,19 @@ int				ft_flag_on_expect_map(t_all *all)
 		return (0);
 }
 
+//charmap上での座標
+void			ft_store_sprite_player_coordinate(t_all *all, char **line, int y, int x)
+{
+	if ((*line)[x] == 'N' || (*line)[x] == 'S' || (*line)[x] == 'E' || (*line)[x] == 'W')
+	{
+		if (all->map.p_x == 0 && all->map.p_y == 0)
+		{
+			all->map.p_x = x + 1;
+			all->map.p_y = y;
+		}
+	}
+}
+
 //lineを1行char
 void			ft_store_line_with_map(t_all *all, char **line)
 {
@@ -327,12 +278,13 @@ void			ft_store_line_with_map(t_all *all, char **line)
 	x = 0;
 	while ((x + 1 < MAP_WIDTH - 1) && ((*line)[x] != '\0'))
 	{
+		if ((*line)[x] == ' ')
+			(*line)[x] = '0';
+		if ((*line)[x] == 'N' || (*line)[x] == 'S' || (*line)[x] == 'E' || (*line)[x] == 'W' || (*line)[x] == '2')
+			ft_store_sprite_player_coordinate(all, line, all->map.tmp_y, x);
 		all->map.char_map[all->map.tmp_y][x + 1] = (*line)[x];
 		x++;
 	}
-	// for (int i = 0; i < MAP_WIDTH; i++)
-	// 	printf("%c", all->map.char_map[all->map.tmp_y][i]);
-	// printf("\n");
 	all->map.tmp_y++;
 }
 
@@ -414,6 +366,30 @@ void			ft_read_cub(int fd, t_all *all)
 	free(line);
 }
 
+//ft_flood_fill
+void			ft_flood_fill(t_all *all, int x, int y, char target, char replace)
+{
+	char		node;
+
+	if (y < 0 || MAP_HEIGHT - 1 < y || x < 0 || MAP_WIDTH - 1 < x)
+		return ;
+	node = all->map.char_map[y][x];
+
+	if (target == replace)
+		return ;
+	else if (node == 'x')
+		ft_put_error_and_exit(all, NULL, "This map is not close!\n");
+	else if (node != target)
+		return ;
+	else
+		all->map.char_map[y][x] = replace;
+
+	ft_flood_fill(all, x, y - 1, target, replace);
+	ft_flood_fill(all, x, y + 1, target, replace);
+	ft_flood_fill(all, x - 1, y, target, replace);
+	ft_flood_fill(all, x + 1, y, target, replace);
+}
+
 //main input
 int				main(int ac, char **av)
 {
@@ -427,6 +403,19 @@ int				main(int ac, char **av)
 		if ((fd = open(av[1], O_RDONLY)) <  0)
 			ft_put_error_and_exit(&all, NULL, "Failed to open\n");
 		ft_read_cub(fd, &all);
+
+		printf("\nset map\n\n");
+		for(int i = 0; i < MAP_HEIGHT; i++)
+		{
+			for(int j = 0; j < MAP_WIDTH; j++)
+				printf("%c", all.map.char_map[i][j]);
+			printf("\n");
+		}
+		printf("p_x    : %d\n", all.map.p_x);
+		printf("p_y    : %d\n", all.map.p_y);
+
+		all.map.char_map[all.map.p_y][all.map.p_x] = '0';
+		ft_flood_fill(&all, all.map.p_x, all.map.p_y, '0', 'P');
 		printf("win_r.x  : %d\n", all.win_r.x);
 		printf("win_r.y  : %d\n", all.win_r.y);
 		printf("NO       : %s\n", all.path_tex.north);
@@ -444,13 +433,14 @@ int				main(int ac, char **av)
 		printf("flag_f  : %d\n", all.flag.f);
 		printf("flag_c  : %d\n", all.flag.c);
 
-		printf("\nset map\n\n");
+		printf("\nflood fill map\n\n");
 		for(int i = 0; i < MAP_HEIGHT; i++)
 		{
 			for(int j = 0; j < MAP_WIDTH; j++)
 				printf("%c", all.map.char_map[i][j]);
 			printf("\n");
 		}
+
 	}
 	close(fd);
 	ft_free_path(&all);
