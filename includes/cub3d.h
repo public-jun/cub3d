@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/12 12:49:26 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/17 21:47:39 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/19 21:54:14 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 # define CUB3D_H
 
 # include "get_next_line.h"
+# include "struct.h"
+# include "define.h"
 # include "../libft/libft.h"
 # include <fcntl.h>
 # include <unistd.h>
@@ -22,96 +24,27 @@
 # include <stdio.h>
 # include <math.h>
 
-# define MAP_HEIGHT 50
-# define MAP_WIDTH 50
-# define R 0
-# define G 1
-# define B 2
-
-typedef struct		s_win_r
-{
-	int				x;
-	int				y;
-}					t_win_r;
-
-typedef struct		s_path_tex
-{
-	char			*north;
-	char			*south;
-	char			*west;
-	char			*east;
-	char			*sprite;
-}					t_path_tex;
-
-typedef struct		s_color
-{
-	int				r;
-	int				g;
-	int				b;
-	int				rgb;
-}					t_color;
-
-typedef struct		s_map
-{
-	char			char_map[MAP_HEIGHT][MAP_WIDTH];
-	int				map[MAP_HEIGHT][MAP_WIDTH];
-	int				start;
-	int				end;
-	int				tmp_y;
-	int				pflag;
-	int				p_x;
-	int				p_y;
-}					t_map;
-
-typedef struct		s_flag
-{
-	int				eflag;
-	int				r;
-	int				no;
-	int				so;
-	int				we;
-	int				ea;
-	int				s;
-	int				f;
-	int				c;
-	int				except_map;
-}					t_flag;
-
-
-// typedef struct	s_info
-// {
-// 	double	posX;
-// 	double	posY;
-// 	double	dirX;
-// 	double	dirY;
-// 	double	planeX;
-// 	double	planeY;
-// 	void	*mlx;
-// 	void	*win;
-// 	t_img	img;
-// 	int		**buf;
-// 	double	zBuffer[width];
-// 	int		**texture;
-// 	double	moveSpeed;
-// 	double	rotSpeed;
-// }				t_info;
-
-typedef struct		s_all
-{
-	// t_info		info;
-	// t_img		img;
-	// t_player	player;
-	// t_info		info;
-	// t_key		key;
-	// t_pair		pair;
-	// t_sprite	sprite;
-	t_win_r		win_r;
-	t_path_tex		path_tex;
-	t_color			color_f;
-	t_color			color_c;
-	t_map			map;
-	t_flag			flag;
-}					t_all;
-
+int				main(int ac, char **av);
+void			ft_init_all(t_all *all);
+void			ft_init_char_map(t_all *all);
+void			ft_init(t_all *all);
+void			ft_free_path(t_all *all);
+void			ft_exit(t_all *all, char **line);
+void			ft_put_error_and_exit(t_all *all, char **line, char *s);
+int				ft_skip_null_and_space(char **line, int *i);
+int				ft_is_all_num(char *num);
+void			ft_parse_line_r(t_all *all, char **line);
+void			ft_parse_line_path(t_all *all, char **path, int *flag, char **line);
+void			ft_parse_line_color(t_all *all, t_color *color, int *flag, char 										**line);
+void			ft_parse_line_param(t_all *all, char **line);
+int				ft_flag_on_expect_map(t_all *all);
+void			ft_store_sprite_player_coordinate(t_all *all, char **line, int y, 														int x);
+void			ft_store_line_with_map(t_all *all, char **line);
+void			ft_judge_possible_chars(t_all *all, char **line);
+int				ft_in_the_process_of_forming_map(t_all *all, char **line);
+void			ft_parse_line_map(t_all *all, char **line);
+void			ft_parse_line(t_all *all, char **line);
+void			ft_read_cub(int fd, t_all *all);
+void			ft_flood_fill(t_all *all, int x, int y, char target, char replace);
 
 #endif
