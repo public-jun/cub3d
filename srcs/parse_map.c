@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 22:19:12 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/19 22:20:48 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/20 17:33:42 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int				ft_flag_on_expect_map(t_all *all)
 }
 
 //charmap上での座標
-void			ft_store_sprite_player_coordinate(t_all *all, char **line, int y, int x)
+void			ft_store_player_coordinate(t_all *all, char **line, int y, int x)
 {
 	if ((*line)[x] == 'N' || (*line)[x] == 'S' || (*line)[x] == 'E' || (*line)[x] == 'W')
 	{
@@ -45,7 +45,7 @@ void			ft_store_line_with_map(t_all *all, char **line)
 		if ((*line)[x] == ' ')
 			(*line)[x] = '0';
 		if ((*line)[x] == 'N' || (*line)[x] == 'S' || (*line)[x] == 'E' || (*line)[x] == 'W' || (*line)[x] == '2')
-			ft_store_sprite_player_coordinate(all, line, all->map.tmp_y, x);
+			ft_store_player_coordinate(all, line, all->map.tmp_y, x);
 		all->map.char_map[all->map.tmp_y][x + 1] = (*line)[x];
 		x++;
 	}

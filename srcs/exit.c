@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 21:23:19 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/19 21:24:24 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/20 13:25:02 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ void			ft_exit(t_all *all, char **line)
 	ft_free_path(all);
 	if (line != NULL)
 		free(*line);
+	if (all->sprite_info.order != NULL)
+		free(all->sprite_info.order);
 	exit(0);
 }
 

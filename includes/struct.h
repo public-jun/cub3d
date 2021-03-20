@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 21:03:21 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/19 21:09:34 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/20 17:02:08 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef struct		s_color
 typedef struct		s_map
 {
 	char			char_map[MAP_HEIGHT][MAP_WIDTH];
-	int				map[MAP_HEIGHT][MAP_WIDTH];
+	int				int_map[MAP_HEIGHT][MAP_WIDTH];
 	int				start;
 	int				end;
 	int				tmp_y;
@@ -65,35 +65,73 @@ typedef struct		s_flag
 	int				except_map;
 }					t_flag;
 
-
-// typedef struct	s_info
+// typedef struct		s_img
 // {
-// 	double	posX;
-// 	double	posY;
-// 	double	dirX;
-// 	double	dirY;
-// 	double	planeX;
-// 	double	planeY;
-// 	void	*mlx;
-// 	void	*win;
-// 	t_img	img;
-// 	int		**buf;
-// 	double	zBuffer[width];
-// 	int		**texture;
-// 	double	moveSpeed;
-// 	double	rotSpeed;
-// }				t_info;
+// 	void			*img_ptr;
+// 	int				*data;
+// 	int				size_l;
+// 	int				bpp;
+// 	int				endian;
+// 	int				img_width;
+// 	int				img_height;
+// }					t_img;
+
+// typedef struct		s_info
+// {
+// 	void			*mlx;
+// 	void			*win;
+// 	t_img			img;
+// 	int				**buf;
+// 	double			zBuffer[width];
+// 	int				**texture;
+// 	double			moveSpeed;
+// 	double			rotSpeed;
+// }					t_info;
+
+typedef struct		s_player
+{
+	double			pos_x;
+	double			pos_y;
+	double			dir_x;
+	double			dir_y;
+	double			plane_x;
+	double			plane_y;
+}					t_player;
+
+// typedef struct		s_key
+// {
+// 	int				key_a;
+// 	int				key_w;
+// 	int				key_s;
+// 	int				key_d;
+// 	int				key_esc;
+// 	int				key_left;
+// 	int				key_right;
+// }					t_key;
+
+typedef struct		s_sprite
+{
+	double			sp_x;
+	double			sp_y;
+	double			distance;
+}					t_sprite;
+
+typedef struct		s_sprite_info
+{
+	int				num;
+	t_sprite		*order;
+	int				tmp;
+}					t_sprite_info;
 
 typedef struct		s_all
 {
-	// t_info		info;
-	// t_img		img;
-	// t_player	player;
-	// t_info		info;
-	// t_key		key;
-	// t_pair		pair;
-	// t_sprite	sprite;
-	t_win_r		win_r;
+	// t_img			img;
+	// t_info			info;
+	t_player		player;
+	// t_key			key;
+	t_sprite		sprite;
+	t_sprite_info	sprite_info;
+	t_win_r			win_r;
 	t_path_tex		path_tex;
 	t_color			color_f;
 	t_color			color_c;

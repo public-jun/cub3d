@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/12 12:49:26 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/19 21:54:14 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/20 17:41:16 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@
 
 int				main(int ac, char **av);
 void			ft_init_all(t_all *all);
-void			ft_init_char_map(t_all *all);
 void			ft_init(t_all *all);
 void			ft_free_path(t_all *all);
 void			ft_exit(t_all *all, char **line);
@@ -45,6 +44,11 @@ int				ft_in_the_process_of_forming_map(t_all *all, char **line);
 void			ft_parse_line_map(t_all *all, char **line);
 void			ft_parse_line(t_all *all, char **line);
 void			ft_read_cub(int fd, t_all *all);
-void			ft_flood_fill(t_all *all, int x, int y, char target, char replace);
+void			ft_flood_fill(t_all *all, char map[MAP_HEIGHT][MAP_WIDTH], int x, int y);
+void			ft_store_sprite_coordinate(t_all *all, int x, int y);
+void			ft_store_player_dir(t_all *all, char map[MAP_HEIGHT][MAP_WIDTH], int x, int y);
+void			ft_store_player_info(t_all *all, char map[MAP_HEIGHT][MAP_WIDTH], int x, int y);
+void			ft_get_info_from_map(t_all *all, char map[MAP_HEIGHT][MAP_WIDTH]);
+void			ft_combine_input_and_output(t_all *all);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 18:23:39 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/19 21:01:41 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/20 17:42:11 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,12 @@ void			ft_init_all(t_all *all)
 	all->map.tmp_y = 1;
 	all->map.p_x = 0;
 	all->map.p_y = 0;
+	all->sprite_info.num = 0;
+	all->sprite_info.order= NULL;
+	all->sprite_info.tmp = 0;
 }
 
-void			ft_init_char_map(t_all *all)
+static void			ft_init_char_map(t_all *all)
 {
 	int			x;
 	int			y;
@@ -51,7 +54,7 @@ void			ft_init_char_map(t_all *all)
 		x = 0;
 		while (x < MAP_WIDTH)
 		{
-			if (x == 0 || x == MAP_WIDTH - 1 || y == 0 || y == MAP_HEIGHT - 1)
+			if (x == 0 || x == MAP_WIDTH - 1   || y == 0 || y == MAP_HEIGHT - 1)
 				all->map.char_map[y][x] = 'x';
 			else
 				all->map.char_map[y][x] = '0';
@@ -59,10 +62,44 @@ void			ft_init_char_map(t_all *all)
 		}
 		y++;
 	}
+	printf("\ninit map\n\n");
+	for(int i = 0; i < MAP_HEIGHT; i++)
+	{
+		for(int j = 0; j < MAP_WIDTH; j++)
+			printf("%c", all->map.char_map[i][j]);
+		printf("\n");
+	}
+}
+
+static void			ft_init_int_map(t_all *all)
+{
+	int			x;
+	int			y;
+
+	y = 0;
+	while (y < MAP_HEIGHT)
+	{
+		x = 0;
+		while (x < MAP_WIDTH)
+		{
+			all->map.int_map[y][x] = 0;
+			x++;
+		}
+		y++;
+	}
+
+	printf("\ninit int map\n\n");
+	for(int i = 0; i < MAP_HEIGHT; i++)
+	{
+		for(int j = 0; j < MAP_WIDTH; j++)
+			printf("%d, ", all->map.int_map[i][j]);
+		printf("\n");
+	}
 }
 
 void			ft_init(t_all *all)
 {
 	ft_init_all(all);
 	ft_init_char_map(all);
+	ft_init_int_map(all);
 }
