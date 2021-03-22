@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 21:23:19 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/20 13:25:02 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/22 15:25:58 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,33 @@ void			ft_free_path(t_all *all)
 
 void			ft_exit(t_all *all, char **line)
 {
+	int			i;
+
 	ft_free_path(all);
 	if (line != NULL)
 		free(*line);
 	if (all->sprite_info.order != NULL)
 		free(all->sprite_info.order);
+	i = 0;
+	if (all->info.buf != NULL)
+	{
+		while (i < all->win_r.y)
+		{
+			free(all->info.buf[i]);
+			i++;
+		}
+		free(all->info.buf);
+	}
+	i = 0;
+	if (all->info.texture != NULL)
+	{
+		while (i < 5)
+		{
+			free(all->info.texture[i]);
+			i++;
+		}
+		free(all->info.texture);
+	}
 	exit(0);
 }
 

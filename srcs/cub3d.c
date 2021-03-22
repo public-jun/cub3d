@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 21:03:09 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/20 18:02:52 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/22 21:40:52 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,120 @@ static int				ft_iscub(char *cub)
 	return (0);
 }
 
+void			floor_and_ceilling_casting(t_all *all)
+{
+	int			x;
+	int			y;
+
+	y = 0;
+	while (y < all->win_r.y / 2)
+	{
+		x = 0;
+		while (x < all->win_r.x)
+		{
+			all->info.buf[y][x] = all->color_c.rgb;
+			all->info.buf[all->win_r.y - 1 - y][x] = all->color_f.rgb;
+			x++;
+		}
+		y++;
+	}
+}
+
+void			ft_set_ray_data(t_all *all, t_ray *ray, t_player *player, int x)
+{
+	ray->camera_x = 2 * x / (double)all->win_r.x - 1;
+	ray->raydir_x = player->dir_x + player->plane_x * ray->camera_x;
+	ray->raydir_y = player->dir_y + player->plane_x * ray->camera_x;
+	ray->map_x = (int)player->pos_x;
+	ray->map_y = (int)player->pos_y;
+	ray->deltadist_x = fabs(1 / ray->raydir_x);
+	ray->deltadist_y = fabs(1 / ray->raydir_y);
+	ray->hit = 0;
+
+}
+
+void			ft_check_raydir_and_set_sidedist(t_ray *ray, t_player *player)
+{
+	if (ray->raydir_x < 0)
+	{
+		ray->step_x = -1;
+		ray->sidedist_x = (player->pos_x - ray->map_x) * ray->deltadist_x;
+	}
+	else
+	{
+		ray->step_x = 1;
+		ray->sidedist_x = (ray->map_x + 1.0 - player->pos_x) * ray->deltadist_x;
+	}
+	if (ray->raydir_y < 0)
+	{
+		ray->step_y = -1;
+		ray->sidedist_y = (player->pos_y - ray->map_y) * ray->deltadist_y;
+	}
+	else
+	{
+		ray->step_y = 1;
+		ray->sidedist_y = (ray->map_y + 1.0 - player->pos_y) * ray->deltadist_y;
+	}
+}
+
+void			ft_find_collision_with_wall(t_ray *ray, t_map *map, t_player *player)
+{
+	while (ray->hit == 0)
+	{
+		if (ray->sidedist_x < ray->sidedist_y)
+		{
+			ray->sidedist_x += ray->deltadist_x;
+			ray->map_x += ray->step_x;
+			ray->side = 0;
+		}
+		else
+		{
+			ray->sidedist_y += ray->deltadist_y;
+			ray->map_y += ray->step_y;
+			ray->side = 1;
+		}
+		if (map->int_map[ray->map_y][ray->map_x] > 0)
+			ray->hit = 1;
+	}
+	if (ray->side == 0)
+		ray->prepwalldist = (ray->map_x - player->pos_x + (1 - ray->step_x) / 2) ray->raydir_x;
+	else
+		ray->prepwalldist = (ray->map_y - player->pos_y + (1 - ray->step_y) / 2) ray->raydir_y;
+}
+
+void			ft_calculate_wall_height_on_screan(t_all *all, t_ray *ray)
+{
+	ray->lineHeight = (int)(all->win_r.y / ray->prepwalldist);
+	ray->drawstart = - ray->lineheight / 2 + all->win_r.y / 2;
+	if (ray->drawstart < 0)
+		ray->drawstart = 0;
+	ray->drawend = ray->lineheight / 2 + all->win_r.y
+}
+
+void			ft_wall_casting(t_all *all)
+{
+	int			x;
+
+	x = 0;
+	while (x < all->win_r.x)
+	{
+		ft_set_ray_data(all, &all->ray, &all->player, x);
+		ft_check_raydir_and_set_sidedist(&all->ray, &all->player);
+		ft_find_collision_with_wall(&all->ray, &all->map, &all->player);
+		ft_calculate_wall_height_on_screan(all, &all->ray);
+	}
+}
+
+
+int				ft_raycasting(t_all *all)
+{
+	floor_and_ceilling_casting(all);
+	ft_wall_casting(all);
+	draw(all);
+	key_action(all);
+	return (0);
+}
+
 int				main(int ac, char **av)
 {
 	t_all		all;
@@ -58,41 +172,20 @@ int				main(int ac, char **av)
 		if ((fd = open(av[1], O_RDONLY)) <  0)
 			ft_put_error_and_exit(&all, NULL, "Failed to open\n");
 		ft_read_cub(fd, &all);
-		printf("\nafter read map\n\n");
-		for(int i = 0; i < MAP_HEIGHT; i++)
-		{
-			for(int j = 0; j < MAP_WIDTH; j++)
-				printf("%c", all.map.char_map[i][j]);
-			printf("\n");
-		}
-
 		ft_combine_input_and_output(&all);
-		printf("\nafter combine map\n\n");
-		for(int i = 0; i < MAP_HEIGHT; i++)
-		{
-			for(int j = 0; j < MAP_WIDTH; j++)
-				printf("%c", all.map.char_map[i][j]);
-			printf("\n");
-		}
-
 		ft_flood_fill(&all, all.map.char_map, all.map.p_x, all.map.p_y);
-		printf("\nafter flood map\n\n");
-		for(int i = 0; i < MAP_HEIGHT; i++)
-		{
-			for(int j = 0; j < MAP_WIDTH; j++)
-				printf("%c", all.map.char_map[i][j]);
-			printf("\n");
-		}
-
-		printf("\nint map\n\n");
-		for(int i = 0; i < MAP_HEIGHT; i++)
-		{
-			for(int j = 0; j < MAP_WIDTH; j++)
-				printf("%d,", all.map.int_map[i][j]);
-			printf("\n");
-		}
+		printf("player  :  (%lf, %lf)\n", all.player.pos_x, all.player.pos_y);
+		printf("dir     :  (%lf, %lf)\n", all.player.dir_x, all.player.dir_y);
+		printf("plane   :  (%lf, %lf)\n", all.player.plane_x, all.player.plane_y);
+		for (int i = 0; i < all.sprite_info.num; i++)
+			printf("sprite[%d]  :  (%d, %d)\n", i, all.sprite_info.order[i].sp_x, all.sprite_info.order[i].sp_y);
+		close(fd);
+		ft_mlx_and_raycast_init(&all);
+		mlx_loop_hook(all->info.mlx, &ft_raycasting, &all);
+		mlx_hook(all->info.win, X_EVENT_KEY_PRESS, 0, &key_press, &all);
+		mlx_hook(all->info.win, X_EVENT_KEY_RELEASE, 0, &key_release, &all);
+		mlx_loop(all->info.mlx);
 	}
-	close(fd);
 	ft_free_path(&all);
 }
 

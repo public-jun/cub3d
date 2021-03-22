@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 18:23:39 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/20 17:42:11 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/21 13:33:38 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ void			ft_init_all(t_all *all)
 	all->sprite_info.num = 0;
 	all->sprite_info.order= NULL;
 	all->sprite_info.tmp = 0;
+	all->info.buf = NULL;
+	all->info.texture = NULL;
 }
 
 static void			ft_init_char_map(t_all *all)
@@ -62,13 +64,6 @@ static void			ft_init_char_map(t_all *all)
 		}
 		y++;
 	}
-	printf("\ninit map\n\n");
-	for(int i = 0; i < MAP_HEIGHT; i++)
-	{
-		for(int j = 0; j < MAP_WIDTH; j++)
-			printf("%c", all->map.char_map[i][j]);
-		printf("\n");
-	}
 }
 
 static void			ft_init_int_map(t_all *all)
@@ -86,14 +81,6 @@ static void			ft_init_int_map(t_all *all)
 			x++;
 		}
 		y++;
-	}
-
-	printf("\ninit int map\n\n");
-	for(int i = 0; i < MAP_HEIGHT; i++)
-	{
-		for(int j = 0; j < MAP_WIDTH; j++)
-			printf("%d, ", all->map.int_map[i][j]);
-		printf("\n");
 	}
 }
 

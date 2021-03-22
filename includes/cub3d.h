@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/12 12:49:26 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/20 17:41:16 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/22 15:22:32 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 # include "struct.h"
 # include "define.h"
 # include "../libft/libft.h"
+//mac
+# include "mlx/mlx.h"
+# include "key_macos.h"
 # include <fcntl.h>
 # include <unistd.h>
 # include <stdlib.h>
@@ -50,5 +53,8 @@ void			ft_store_player_dir(t_all *all, char map[MAP_HEIGHT][MAP_WIDTH], int x, i
 void			ft_store_player_info(t_all *all, char map[MAP_HEIGHT][MAP_WIDTH], int x, int y);
 void			ft_get_info_from_map(t_all *all, char map[MAP_HEIGHT][MAP_WIDTH]);
 void			ft_combine_input_and_output(t_all *all);
+void			set_texture_in_load_image(t_all *all, int i);
+void			load_image(t_all *all, char *path);
+void			ft_load_texture(t_all *all);
 
 #endif

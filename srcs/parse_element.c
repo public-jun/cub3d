@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 21:46:38 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/19 21:54:05 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/22 17:06:44 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,5 +90,6 @@ void			ft_parse_line_color(t_all *all, t_color *color, int *flag, char **line)
 	if (char_rgb[3])
 		ft_put_error_and_exit(all, line, "Invalid format\n");
 	ft_free_all(char_rgb);
+	color->rgb = color->r * 65536 + color->g * 256 + color->b;
 	*flag = 1;
 }

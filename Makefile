@@ -6,7 +6,7 @@
 #    By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/02/27 16:49:55 by jnakahod          #+#    #+#              #
-#    Updated: 2021/03/20 17:34:33 by jnakahod         ###   ########.fr        #
+#    Updated: 2021/03/20 18:31:48 by jnakahod         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ SRCS = srcs/cub3d.c \
 		srcs/parse_map.c \
 		srcs/flood_fill.c \
 		srcs/utils.c \
-		srcs/combine_data.c \
+		srcs/combine_data_from_map.c \
 
 OBJCS = $(SRCS:%.c=%.o)
 
@@ -65,6 +65,6 @@ test:
 		srcs/parse_map.c \
 		srcs/flood_fill.c \
 		srcs/utils.c \
-		srcs/combine_data.c \
+		srcs/combine_data_from_map.c \
 
 .PHONY: all clean fclean re test
