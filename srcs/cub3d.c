@@ -6,12 +6,11 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 21:03:09 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/22 21:40:52 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/23 18:30:57 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
-
 
 //cub 読み込み部分(gnl)
 void			ft_read_cub(int fd, t_all *all)
@@ -122,18 +121,70 @@ void			ft_find_collision_with_wall(t_ray *ray, t_map *map, t_player *player)
 			ray->hit = 1;
 	}
 	if (ray->side == 0)
-		ray->prepwalldist = (ray->map_x - player->pos_x + (1 - ray->step_x) / 2) ray->raydir_x;
+		ray->prepwalldist = (ray->map_x - player->pos_x + (1 - ray->step_x) / 2) / ray->raydir_x;
 	else
-		ray->prepwalldist = (ray->map_y - player->pos_y + (1 - ray->step_y) / 2) ray->raydir_y;
+		ray->prepwalldist = (ray->map_y - player->pos_y + (1 - ray->step_y) / 2) / ray->raydir_y;
 }
 
-void			ft_calculate_wall_height_on_screan(t_all *all, t_ray *ray)
+void			ft_calculate_wall_height_on_screen(t_all *all, t_ray *ray)
 {
-	ray->lineHeight = (int)(all->win_r.y / ray->prepwalldist);
+	ray->lineheight = (int)(all->win_r.y / ray->prepwalldist);
 	ray->drawstart = - ray->lineheight / 2 + all->win_r.y / 2;
 	if (ray->drawstart < 0)
 		ray->drawstart = 0;
-	ray->drawend = ray->lineheight / 2 + all->win_r.y
+	ray->drawend = ray->lineheight / 2 + all->win_r.y / 2;
+	if (ray->drawend >= all->win_r.y)
+		ray->drawend = all->win_r.y - 1;
+}
+
+void			ft_set_direction_tex(t_ray *ray, t_tex *tex)
+{
+	if (ray->raydir_y > 0 && ray->side == 1)
+		tex->num = N_TEX;
+	else if (ray->raydir_y < 0 && ray->side == 1)
+		tex->num = S_TEX;
+	else if (ray->raydir_x > 0 && ray->side == 0)
+		tex->num = E_TEX;
+	else if (ray->raydir_x < 0 && ray->side == 0)
+		tex->num = W_TEX;
+	else
+		tex->num = -1;
+}
+
+void			ft_attach_tex_size_for_screen(t_all *all, t_ray *ray, t_player *player, t_tex *tex)
+{
+	ray->wall_x = 0;
+	if (ray->side == 0)
+		ray->wall_x = player->pos_y + ray->prepwalldist * ray->raydir_x;
+	else
+		ray->wall_x = player->pos_x + ray->prepwalldist * ray->raydir_x;
+	ray->wall_x -= floor(ray->wall_x);
+	tex->tex_x = (int)(ray->wall_x * (double)tex->tex_width[tex->num]);
+	if (ray->side == 0 && ray->raydir_x > 0)
+		tex->tex_x = tex->tex_width[tex->num] - tex->tex_x - 1;
+	if (ray->side == 1 && ray->raydir_y < 0)
+		tex->tex_x = tex->tex_width[tex->num] - tex->tex_x - 1;
+	tex->step = 1.0 * tex->tex_height[tex->num] / ray->lineheight;
+	tex->texpos = (ray->drawstart - all->win_r.y / 2 + ray->lineheight / 2) * tex->step;
+}
+
+void			ft_set_buf(t_ray *ray, t_tex *tex, t_info *info, int x)
+{
+	int			y;
+	int			color;
+
+	y = ray->drawstart;
+	printf("max tex size %d\n", tex->tex_width[0] * tex->tex_height[0]);
+	while (y < ray->drawend)
+	{
+		tex->tex_y = ft_min((int)tex->texpos, tex->tex_height[tex->num] - 1);
+		tex->texpos += tex->step;
+		color = info->texture[tex->num][tex->tex_width[tex->num] * tex->tex_y + tex->tex_x];
+		// printf("%d\t", info->texture[tex->num][tex->tex_width[tex->num] * tex->tex_y + tex->tex_x]);
+		//int_map[y][x] を map[x][y]にする
+		info->buf[y][x] = color;
+	}
+	// info->z_buffer[x] = ray->prepwalldist;
 }
 
 void			ft_wall_casting(t_all *all)
@@ -146,17 +197,38 @@ void			ft_wall_casting(t_all *all)
 		ft_set_ray_data(all, &all->ray, &all->player, x);
 		ft_check_raydir_and_set_sidedist(&all->ray, &all->player);
 		ft_find_collision_with_wall(&all->ray, &all->map, &all->player);
-		ft_calculate_wall_height_on_screan(all, &all->ray);
+		ft_calculate_wall_height_on_screen(all, &all->ray);
+		ft_set_direction_tex(&all->ray, &all->tex);
+		ft_attach_tex_size_for_screen(all, &all->ray, &all->player, &all->tex);
+		ft_set_buf(&all->ray, &all->tex, &all->info, x);
+		x++;
 	}
 }
 
+void			ft_draw_to_window(t_all *all)
+{
+	int			x;
+	int			y;
+
+	y = 0;
+	while (y < all->win_r.y)
+	{
+		x = 0;
+		while (x < all->win_r.x)
+		{
+			all->info.img.data[y * (all->info.img.size_l / 4) + x] = all->info.buf[y][x];
+			x++;
+		}
+		y++;
+	}
+}
 
 int				ft_raycasting(t_all *all)
 {
 	floor_and_ceilling_casting(all);
 	ft_wall_casting(all);
-	draw(all);
-	key_action(all);
+	ft_draw_to_window(all);
+	// key_action(all);
 	return (0);
 }
 
@@ -181,10 +253,10 @@ int				main(int ac, char **av)
 			printf("sprite[%d]  :  (%d, %d)\n", i, all.sprite_info.order[i].sp_x, all.sprite_info.order[i].sp_y);
 		close(fd);
 		ft_mlx_and_raycast_init(&all);
-		mlx_loop_hook(all->info.mlx, &ft_raycasting, &all);
-		mlx_hook(all->info.win, X_EVENT_KEY_PRESS, 0, &key_press, &all);
-		mlx_hook(all->info.win, X_EVENT_KEY_RELEASE, 0, &key_release, &all);
-		mlx_loop(all->info.mlx);
+		mlx_loop_hook(all.info.mlx, &ft_raycasting, &all);
+		// mlx_hook(all.info.win, X_EVENT_KEY_PRESS, 0, &key_press, &all);
+		// mlx_hook(all.info.win, X_EVENT_KEY_RELEASE, 0, &key_release, &all);
+		mlx_loop(all.info.mlx);
 	}
 	ft_free_path(&all);
 }

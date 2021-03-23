@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 21:08:12 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/20 15:32:45 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/23 17:47:17 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,5 +18,9 @@
 # define R 0
 # define G 1
 # define B 2
+# define N_TEX 0
+# define S_TEX 1
+# define E_TEX 2
+# define W_TEX 3
 
 #endif

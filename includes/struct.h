@@ -6,7 +6,7 @@
 /*   By: jnakahod <jnakahod@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 21:03:21 by jnakahod          #+#    #+#             */
-/*   Updated: 2021/03/22 21:29:48 by jnakahod         ###   ########.fr       */
+/*   Updated: 2021/03/23 15:06:28 by jnakahod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ typedef struct		s_info
 	void			*win;
 	t_img			img;
 	int				**buf;
-	double			zBuffer[width];
+	// double			z_buffer[width];
 	int				**texture;
 	double			moveSpeed;
 	double			rotSpeed;
@@ -128,7 +128,19 @@ typedef struct		s_ray
 	int				lineheight;
 	int				drawstart;
 	int				drawend;
+	double			wall_x;
 }					t_ray;
+
+typedef struct		s_tex
+{
+	int				num;
+	int				tex_x;
+	int				tex_y;
+	double			step;
+	double			texpos;
+	int				tex_width[5];
+	int				tex_height[5];
+}					t_tex;
 
 typedef struct		s_sprite
 {
@@ -159,6 +171,7 @@ typedef struct		s_all
 	t_map			map;
 	t_flag			flag;
 	t_ray			ray;
+	t_tex			tex;
 }					t_all;
 
 #endif
